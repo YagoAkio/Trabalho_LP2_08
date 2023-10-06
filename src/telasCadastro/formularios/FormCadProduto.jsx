@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import { Button, Container, Form, Row, Col, FloatingLabel } from "react-bootstrap";
 
 export default function FormCadProduto(props) {
-    const estadoInicialProduto = {
-        codigoProduto: "",
+    const produtoVazio = {
+        codigo: "",
         nomeProduto: "",
         preco: "",
         quantidade: "",
         categoria: "",
-        descricao: "",
-    };
+        descricao: ""
+    }
 
+    const estadoInicialProduto = props.produtoParaEdicao
     const [produto, setProduto] = useState(estadoInicialProduto);
     const [formValidado, setFormValidado] = useState(false);
 
@@ -23,17 +24,18 @@ export default function FormCadProduto(props) {
     function manipularSubmissao(e) {
         const form = e.currentTarget;
         if (form.checkValidity()) {
-            const novoProduto = {
-                codigoProduto: `${produto.codigoProduto} `,
-                nomeProduto: produto.nomeProduto ,
-                preco: produto.preco ,
-                quantidade: produto.quantidade ,
-                categoria: produto.categoria ,
-                descricao: produto.descricao,
-            };
-            props.adicionarProduto(novoProduto);
-
-            setProduto(estadoInicialProduto);
+            if(!props.modoEdicao){
+                props.setListaProdutos([...props.listaProdutos,produto]);
+                props.setMensagem('Produto incluído com sucesso');
+                props.setTipoMensagem('success');
+                props.setMostrarMensagem(true);
+            }
+            else{
+                props.setListaProdutos([...props.listaProdutos.filter((itemProduto)=>itemProduto.codigo !== produto.codigo),produto]);
+                props.setModoEdicao(false);
+                props.setProdutoParaEdicao(produtoVazio);                
+            }
+            setProduto(produtoVazio); 
             setFormValidado(false);
         } else {
             setFormValidado(true);
@@ -54,13 +56,13 @@ export default function FormCadProduto(props) {
                     className="mb-3"
                 >
                     <Form.Control
-                    type="text"
-                    placeholder="Código do produto"
-                    id="codigoProduto"
-                    name="codigoProduto"
-                    value={produto.codigoProduto}
-                    onChange={manipularMudancas}
-                    required
+                        type="text"
+                        placeholder="Código do produto"
+                        id="codigo"
+                        name="codigo"
+                        value={produto.codigo}
+                        onChange={manipularMudancas}
+                        required
                     />
                 </FloatingLabel>
                 <Form.Control.Feedback type="invalid">
@@ -78,13 +80,13 @@ export default function FormCadProduto(props) {
                     className="mb-3"
                 >
                     <Form.Control
-                    type="text"
-                    placeholder="Nome do produto"
-                    id="nomeProduto"
-                    name="nomeProduto"
-                    value={produto.nomeProduto}
-                    onChange={manipularMudancas}
-                    required
+                        type="text"
+                        placeholder="Nome do produto"
+                        id="nomeProduto"
+                        name="nomeProduto"
+                        value={produto.nomeProduto}
+                        onChange={manipularMudancas}
+                        required
                     />
                 </FloatingLabel>
                 <Form.Control.Feedback type="invalid">
@@ -181,23 +183,16 @@ export default function FormCadProduto(props) {
             </Col>
             </Row>
             <Row>
-            <Col md={6} offset={5} className="d-flex justify-content-end">
-                <Button type="submit" variant={"primary"}>
-                Cadastrar
-                </Button>
-            </Col>
-            <Col md={6} offset={5}>
-                <Button
-                type="button"
-                variant={"secondary"}
-                onClick={() => {
-                    props.exibirProdutos(false);
-                }}
-                >
-                Voltar
-                </Button>
-            </Col>
-            </Row>
+                    <Col md={6} offset={5} className="d-flex justify-content-end">
+                        <Button type="submit" variant={"primary"}>{props.modoEdicao ? "Alterar":"Cadastrar"}</Button>
+                    </Col>
+                    <Col md={6} offset={5}>
+                        <Button type="button" variant={"secondary"} onClick={() => {
+                                props.exibirFormulario(false)
+                            }
+                        }>Voltar</Button>
+                    </Col>
+                </Row>
         </Form>
         </Container>
     );

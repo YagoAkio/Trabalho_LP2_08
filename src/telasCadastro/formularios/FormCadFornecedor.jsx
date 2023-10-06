@@ -3,7 +3,7 @@ import { Button, Container, Form, Row, Col, FloatingLabel } from "react-bootstra
 
 export default function FormCadFornecedor(props) {
     
-    const estadoInicialFornecedor= {
+    const fornecedorVazio = {
         nome:'',
         cnpj:'',
         contato:'',
@@ -11,6 +11,7 @@ export default function FormCadFornecedor(props) {
         telefone:'',
         endereco:''
     }
+    const estadoInicialFornecedor = props.fornecedorParaEdicao
     const [fornecedor, setFornecedor] = useState(estadoInicialFornecedor);
     const [formValidado, setFormValidado] = useState(false);
 
@@ -23,17 +24,19 @@ export default function FormCadFornecedor(props) {
     function manipularSubmissao(e){
         const form = e.currentTarget; 
         if (form.checkValidity()) {
-            const novoFornencedor = {
-                nome: fornecedor.nomeFornecedor,
-                cnpj: fornecedor.cnpj,
-                contato: fornecedor.contato,
-                email: fornecedor.email,
-                telefone: fornecedor.telefone,
-                endereco: fornecedor.endereco,
-            };
-            props.adicionarFornecedor(novoFornencedor);
-            
-            setFornecedor(estadoInicialFornecedor);
+            if(!props.modoEdicao){
+                props.setListaFornecedores([...props.listaFornecedores,fornecedor]);
+                props.setMensagem('Fornecedor incluído com sucesso');
+                props.setTipoMensagem('success');
+                props.setMostrarMensagem(true);
+            }else{
+                //alterar os dados do fornecedor (filtra e adiciona)
+
+                props.setListaFornecedores([...props.listaFornecedores.filter((itemFornecedor)=>itemFornecedor.cnpj !== fornecedor.cnpj),fornecedor]);
+                props.setModoEdicao(false);
+                props.setFornecedorParaEdicao(fornecedorVazio);                
+            }
+            setFornecedor(fornecedorVazio);
             setFormValidado(false);
         }
         else{
@@ -54,7 +57,7 @@ export default function FormCadFornecedor(props) {
                                 label="Nome do Fornecedor:"
                                 className="mb-3"
                             >
-                                <Form.Control type="text" placeholder="Nome do fornecedor" onChange={manipularMudancas} value={fornecedor.nomeFornecedor} id="nomeFornecedor" name="nomeFornecedor" required />
+                                <Form.Control type="text" placeholder="Nome do fornecedor" onChange={manipularMudancas} value={fornecedor.nome} id="nome" name="nome" required />
                             </FloatingLabel>
                             <Form.Control.Feedback type="invalid">Informe o nome do fornecedor!</Form.Control.Feedback>
                         </Form.Group>
@@ -124,12 +127,12 @@ export default function FormCadFornecedor(props) {
                     </Col>
                 </Row>
                 <Row>
-                <Col md={6} offset={5} className="d-flex justify-content-end">
-                        <Button type="submit" variant={"primary"}>Cadastrar</Button>
+                    <Col md={6} offset={5} className="d-flex justify-content-end">
+                        <Button type="submit" variant={"primary"}>{props.modoEdicao ? "Alterar":"Cadastrar"}</Button>
                     </Col>
                     <Col md={6} offset={5}>
                         <Button type="button" variant={"secondary"} onClick={() => {
-                                props.exibirFornecedor(false)
+                                props.exibirFormulario(false)
                             }
                         }>Voltar</Button>
                     </Col>

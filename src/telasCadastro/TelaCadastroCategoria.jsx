@@ -3,23 +3,54 @@ import Pagina from "../templates/Pagina";
 import FormCadCategoria from "./formularios/FormCadCategorias";
 import TabelaCategorias from "./tabelas/TabelaCategorias";
 import { useState } from "react";
+import TelaMensagem from "./TelaMensagem";
 
-export default function TelaCadastroCategoria(props) {
-    const [exibirCategorias, setExibirCategorias] = useState(false);
-    const [categorias, setCategorias] = useState([]); 
+export default function TelaCadastroCategoria(props){
+    const [exibirFormulario, setExibirFormulario] = useState(false);
+    const [listaCategorias, setListaCategorias] = useState([]);
+    const [mostrarMensagem, setMostrarMensagem] = useState(false);
+    const [mensagem, setMensagem] = useState("");
+    const [tipoMensagem, setTipoMensagem] = useState("");
+    const [categoriaParaEdicao, setCategoriaParaEdicao] = useState({
+        codigoCategoria: '',
+        nomeCategoria: '',
+        descricao: ''
+    });
+    const [modoEdicao, setModoEdicao]=useState(false);
 
-
-    const adicionarCategorias = (novaCategoria) => {
-        setCategorias([...categorias, novaCategoria]);
-    };
-
-    return (
-        <Container>
-            <Pagina>
-                {
-                    exibirCategorias ? (<FormCadCategoria exibirCategorias={setExibirCategorias} adicionarCategorias={adicionarCategorias}/>) : (<TabelaCategorias exibirCategorias={setExibirCategorias} categorias={categorias}/>)
-                }
-            </Pagina>
-        </Container>
-    );
+    if(mostrarMensagem){
+        return(
+            <TelaMensagem mensagem={mensagem} tipo={tipoMensagem} setMostrarMensagem={setMostrarMensagem}/>
+        )
+    }
+    else{
+        return(
+            <Container>
+                <Pagina>
+                    {
+                        exibirFormulario ? <FormCadCategoria exibirFormulario={setExibirFormulario}
+                            listaCategorias={listaCategorias}
+                            setListaCategorias={setListaCategorias}
+                            categoriaParaEdicao={categoriaParaEdicao}
+                            setCategoriaParaEdicao={setCategoriaParaEdicao}
+                            modoEdicao={modoEdicao}
+                            setModoEdicao={setModoEdicao}
+                            setMostrarMensagem={setMostrarMensagem}
+                            setMensagem={setMensagem}
+                            setTipoMensagem={setTipoMensagem}
+                        />
+                            :
+                            <TabelaCategorias exibirFormulario={setExibirFormulario}
+                                listaCategorias={listaCategorias}
+                                setListaCategorias={setListaCategorias}
+                                categoriaParaEdicao={categoriaParaEdicao}
+                                setCategoriaParaEdicao={setCategoriaParaEdicao}
+                                modoEdicao={modoEdicao}
+                                setModoEdicao={setModoEdicao}
+                            />
+                    }
+                </Pagina>
+            </Container>
+        );
+    }
 }

@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { Button, Container, Form, Row, Col, FloatingLabel } from "react-bootstrap";
-
 export default function FormCadCliente(props) {
     //os atributos deste objeto devem estar associados aos inputs do formulários
-    const estadoInicialCliente = {
-            cpf:'',
-            nome:'',
-            endereco:'',
-            numero:'',
-            bairro:'',
-            cidade:'',
-            uf:'SP',
-            cep:''
-        }
+    const clienteVazio = {
+        cpf:'',
+        nome:'',
+        endereco:'',
+        numero:'',
+        bairro:'',
+        cidade:'',
+        uf:'SP',
+        cep:''
+    }
+    const estadoInicialCliente = props.clienteParaEdicao;
     const [cliente, setCliente] = useState(estadoInicialCliente);
     const [formValidado, setFormValidado] = useState(false);
 
@@ -24,17 +24,23 @@ export default function FormCadCliente(props) {
 
     function manipularSubmissao(e){
         const form = e.currentTarget; 
-        if (form.checkValidity()) {
-            const novoCliente = {
-                cpf: cliente.cpf,
-                nome: cliente.nome,
-                endereco: `${cliente.endereco}, ${cliente.numero}`,
-                cidadeUf: `${cliente.cidade}/${cliente.uf}`,
-                cep: cliente.cep,
-            };
-            props.adicionarCliente(novoCliente);
-            
-            setCliente(estadoInicialCliente);
+        if (form.checkValidity()){
+            //todos os campos preenchidos
+            //mandar os dados para o backend
+            if(!props.modoEdicao){
+                props.setListaClientes([...props.listaClientes,cliente]);
+                props.setMensagem('Cliente incluído com sucesso');
+                props.setTipoMensagem('success');
+                props.setMostrarMensagem(true);
+            }
+            else{
+                //alterar os dados do cliente (filtra e adiciona)
+
+                props.setListaClientes([...props.listaClientes.filter((itemCliente)=>itemCliente.cpf !== cliente.cpf),cliente]);
+                props.setModoEdicao(false);
+                props.setClienteParaEdicao(clienteVazio);                
+            }
+            setCliente(clienteVazio); // ou sair da tela de formulário 
             setFormValidado(false);
         }
         else{
@@ -231,7 +237,7 @@ export default function FormCadCliente(props) {
                 </Row>
                 <Row>
                     <Col md={6} offset={5} className="d-flex justify-content-end">
-                        <Button type="submit" variant={"primary"}>Cadastrar</Button>
+                        <Button type="submit" variant={"primary"}>{props.modoEdicao ? "Alterar":"Cadastrar"}</Button>
                     </Col>
                     <Col md={6} offset={5}>
                         <Button type="button" variant={"secondary"} onClick={() => {
