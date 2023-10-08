@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Trabalho_LP2_08/static/css/main.99e4cf39.css",
+    "main.js": "/Trabalho_LP2_08/static/js/main.90f4fd35.js",
+    "index.html": "/Trabalho_LP2_08/index.html",
+    "main.99e4cf39.css.map": "/Trabalho_LP2_08/static/css/main.99e4cf39.css.map",
+    "main.90f4fd35.js.map": "/Trabalho_LP2_08/static/js/main.90f4fd35.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.99e4cf39.css",
+    "static/js/main.90f4fd35.js"
+  ]
+}
